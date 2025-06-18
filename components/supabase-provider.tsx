@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { createContext, useContext, useEffect, useState } from "react"
-import { createBrowserSupabaseClient } from "@/lib/supabase"
+import { createBrowserClient } from "@supabase/ssr"
 import { useRouter } from "next/navigation"
 import type { Session, SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "@/types/supabase"
@@ -16,7 +16,12 @@ type SupabaseContext = {
 const Context = createContext<SupabaseContext | undefined>(undefined)
 
 export function SupabaseProvider({ children }: { children: React.ReactNode }) {
-  const [supabase] = useState(() => createBrowserSupabaseClient())
+  const [supabase] = useState(() => 
+    createBrowserClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+  )
   const [session, setSession] = useState<Session | null>(null)
   const router = useRouter()
 
@@ -28,11 +33,16 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       setSession(session)
 
       if (event === "SIGNED_IN") {
-        console.log("User signed in, refreshing...")
-        router.refresh()
+        console.log("User signed in, navigating to dashboard...")
+        // Only navigate if we're not already on dashboard or protected routes
+        if (window.location.pathname === "/login" || window.location.pathname === "/signup" || window.location.pathname === "/") {
+          router.push("/dashboard")
+        } else {
+          router.refresh()
+        }
       } else if (event === "SIGNED_OUT") {
-        console.log("User signed out, refreshing...")
-        router.refresh()
+        console.log("User signed out, navigating to home...")
+        router.push("/")
       }
     })
 

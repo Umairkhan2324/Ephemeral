@@ -38,8 +38,8 @@ export default async function DashboardPage() {
     // Case 2: Profile doesn't exist (fetchedProfile is null. This will be true if 0 rows were found, leading to PGRST116, or if .single() behaved differently and returned null error for 0 rows)
     // We attempt creation if fetchedProfile is null.
     if (!profile) {
-      console.log(\`Dashboard: Profile not found for user \${session.user.id}. Attempting creation.\`);
-      const username = session.user.email?.split("@")[0] || \`user\${session.user.id.slice(0, 8)}\`;
+      console.log(`Dashboard: Profile not found for user ${session.user.id}. Attempting creation.`);
+      const username = session.user.email?.split("@")[0] || `user${session.user.id.slice(0, 8)}`;
       const email = session.user.email || ""; // Should always exist if session.user exists from auth
 
       const { data: newProfile, error: createError } = await supabase
@@ -48,7 +48,7 @@ export default async function DashboardPage() {
           id: session.user.id,
           username,
           email,
-          avatar_url: \`https://api.dicebear.com/7.x/avataaars/svg?seed=\${username}\`,
+          avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
         })
         .select()
         .single();

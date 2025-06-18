@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useSupabase } from "@/components/supabase-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,6 +19,7 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const { supabase } = useSupabase()
   const { toast } = useToast()
+  const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,8 +39,8 @@ export default function LoginForm() {
           description: "Welcome back to Ephemeral!",
         })
 
-        // The router.refresh() in SupabaseProvider will handle redirection
-        // by triggering server-side session checks on the current page.
+        // Let the auth state change in SupabaseProvider handle navigation
+        // router.push("/dashboard") - removed to avoid conflicts
       }
     } catch (error: any) {
       console.error("Login error:", error)

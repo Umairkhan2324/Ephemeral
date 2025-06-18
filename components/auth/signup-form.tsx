@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useSupabase } from "@/components/supabase-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,6 +20,7 @@ export default function SignupForm() {
   const [loading, setLoading] = useState(false)
   const { supabase } = useSupabase()
   const { toast } = useToast()
+  const router = useRouter()
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,9 +56,9 @@ export default function SignupForm() {
           description: "Please check your email to verify your account, then you can log in.",
         })
 
-        // Redirect to login page
+        // Redirect to login page using Next.js router
         setTimeout(() => {
-          window.location.href = "/login"
+          router.push("/login")
         }, 2000)
       }
     } catch (error: any) {

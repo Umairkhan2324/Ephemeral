@@ -1,8 +1,18 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Clock, Sparkles, Zap } from "lucide-react"
 
 export default function LandingPage() {
+  const handleLoginClick = () => {
+    console.log("Login button clicked")
+  }
+
+  const handleSignupClick = () => {
+    console.log("Signup button clicked")
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-16 flex items-center justify-between">
@@ -11,10 +21,10 @@ export default function LandingPage() {
           <span className="text-xl font-bold">Ephemeral</span>
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/login">
+          <Link href="/login" onClick={handleLoginClick}>
             <Button variant="ghost">Login</Button>
           </Link>
-          <Link href="/signup">
+          <Link href="/signup" onClick={handleSignupClick}>
             <Button>Sign Up</Button>
           </Link>
         </div>

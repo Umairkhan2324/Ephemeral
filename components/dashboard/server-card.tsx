@@ -31,7 +31,7 @@ export default function ServerCard({ server, onCreatePost }: ServerCardProps) {
         <Button onClick={onCreatePost} className="flex-1">
           Post Here
         </Button>
-        <Link href={`/servers/${server.id}`}>
+        <Link href={`https://ephemeral-liart.vercel.app//servers/${server.id}`}>
           <Button variant="outline" size="icon">
             <ArrowRight className="h-4 w-4" />
           </Button>

@@ -10,7 +10,7 @@ export default async function SignupPage() {
 
   // If user is logged in, redirect to dashboard
   if (session) {
-    redirect("/dashboard")
+    redirect("https://ephemeral-liart.vercel.app/dashboard")
   }
 
   return (

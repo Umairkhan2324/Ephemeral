@@ -15,7 +15,7 @@ export default async function DashboardPage() {
 
     if (!session || sessionError) {
       console.log("No session, redirecting to login")
-      redirect("/login")
+      redirect("https://ephemeral-liart.vercel.app//login")
     }
 
     // Get or create user profile
@@ -32,7 +32,7 @@ export default async function DashboardPage() {
     // Case 1: A real error occurred during fetch (not just "not found" which is PGRST116)
     if (profileFetchError && profileFetchError.code !== 'PGRST116') {
       console.error("Dashboard: Error fetching profile (and not PGRST116):", profileFetchError);
-      redirect("/login");
+      redirect("https://ephemeral-liart.vercel.app//login");
     }
 
     // Case 2: Profile doesn't exist (fetchedProfile is null. This will be true if 0 rows were found, leading to PGRST116, or if .single() behaved differently and returned null error for 0 rows)
@@ -55,7 +55,7 @@ export default async function DashboardPage() {
 
       if (createError) {
         console.error("Dashboard: Error creating profile:", createError);
-        redirect("/login");
+        redirect("https://ephemeral-liart.vercel.app//login");
       }
       
       profile = newProfile;
@@ -63,7 +63,7 @@ export default async function DashboardPage() {
       if (!profile) {
         // This case should ideally not be reached if insert().select().single() works as expected
         console.error("Dashboard: Profile creation attempt did not return a profile. This is unexpected. Redirecting.");
-        redirect("/login");
+        redirect("https://ephemeral-liart.vercel.app//login");
       }
       console.log("Dashboard: Profile successfully created:", profile);
     }
@@ -81,6 +81,6 @@ export default async function DashboardPage() {
     return <Dashboard user={profile!} servers={servers || []} />
   } catch (error) {
     console.error("Dashboard error:", error)
-    redirect("/login")
+    redirect("https://ephemeral-liart.vercel.app//login")
   }
 }

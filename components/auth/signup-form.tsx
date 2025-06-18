@@ -124,7 +124,7 @@ export default function SignupForm() {
           </Button>
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/login" className="text-primary hover:underline">
+            <Link href="https://ephemeral-liart.vercel.app//login" className="text-primary hover:underline">
               Sign in
             </Link>
           </p>

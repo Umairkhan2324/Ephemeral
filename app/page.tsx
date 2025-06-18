@@ -13,7 +13,7 @@ export default async function Home() {
 
     // If user is logged in, redirect to dashboard
     if (session?.user) {
-      redirect("/dashboard")
+      redirect("https://ephemeral-liart.vercel.app/dashboard")
     }
   } catch (error) {
     console.log("Home page session check failed:", error)

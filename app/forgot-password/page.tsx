@@ -25,7 +25,7 @@ export default function ForgotPasswordPage() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `https://ephemeral-liart.vercel.app/reset-password`,
       })
 
       if (error) throw error
@@ -102,7 +102,7 @@ export default function ForgotPasswordPage() {
             </Button>
             <p className="mt-4 text-center text-sm text-muted-foreground">
               Remember your password?{" "}
-              <Link href="/login" className="text-primary hover:underline">
+              <Link href="https://ephemeral-liart.vercel.app//login" className="text-primary hover:underline">
                 Sign in
               </Link>
             </p>

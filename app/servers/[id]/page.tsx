@@ -14,7 +14,7 @@ export default async function ServerDetailPage({ params }: ServerPageProps) {
   const {
     data: { session },
   } = await supabase.auth.getSession()
-  if (!session) redirect("https://ephemeral-liart.vercel.app//login")
+  if (!session) redirect("/login")
 
   const { data: server } = await supabase.from("servers").select("*").eq("id", params.id).single()
 

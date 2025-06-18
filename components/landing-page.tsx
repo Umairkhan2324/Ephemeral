@@ -16,15 +16,15 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <header className="px-4 lg:px-6 h-16 flex items-center justify-between">
-        <Link href="https://ephemeral-liart.vercel.app/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Sparkles className="h-6 w-6 text-primary" />
           <span className="text-xl font-bold">Ephemeral</span>
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="https://ephemeral-liart.vercel.app//login" onClick={handleLoginClick}>
+          <Link href="/login" onClick={handleLoginClick}>
             <Button variant="ghost">Login</Button>
           </Link>
-          <Link href="https://ephemeral-liart.vercel.app/signup" onClick={handleSignupClick}>
+          <Link href="/signup" onClick={handleSignupClick}>
             <Button>Sign Up</Button>
           </Link>
         </div>
@@ -42,7 +42,7 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="space-x-4">
-                <Link href="https://ephemeral-liart.vercel.app/signup">
+                <Link href="/signup">
                   <Button className="px-8">
                     Get Started <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>

@@ -35,14 +35,15 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       if (event === "SIGNED_IN") {
         console.log("User signed in, navigating to dashboard...")
         // Only navigate if we're not already on dashboard or protected routes
-        if (window.location.pathname === "https://ephemeral-liart.vercel.app//login" || window.location.pathname === "https://ephemeral-liart.vercel.app/signup" || window.location.pathname === "https://ephemeral-liart.vercel.app/") {
-          router.push("https://ephemeral-liart.vercel.app/dashboard")
+        const currentPath = window.location.pathname
+        if (currentPath === "/login" || currentPath === "/signup" || currentPath === "/") {
+          router.push("/dashboard")
         } else {
           router.refresh()
         }
       } else if (event === "SIGNED_OUT") {
         console.log("User signed out, navigating to home...")
-        router.push("https://ephemeral-liart.vercel.app/")
+        router.push("/")
       }
     })
 

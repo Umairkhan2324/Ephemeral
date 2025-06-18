@@ -32,7 +32,7 @@ export default function SignupForm() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/login`,
         },
       })
 
@@ -51,15 +51,8 @@ export default function SignupForm() {
           console.error("Profile creation error:", profileError)
         }
 
-        toast({
-          title: "Account created!",
-          description: "Please check your email to verify your account, then you can log in.",
-        })
-
-        // Redirect to login page using Next.js router
-        setTimeout(() => {
-          router.push("/login")
-        }, 2000)
+        // Redirect to the check email page instead of showing a toast
+        router.push("/check-email")
       }
     } catch (error: any) {
       console.error("Signup error:", error)
@@ -124,7 +117,7 @@ export default function SignupForm() {
           </Button>
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link href="https://ephemeral-liart.vercel.app//login" className="text-primary hover:underline">
+            <Link href="/login" className="text-primary hover:underline">
               Sign in
             </Link>
           </p>

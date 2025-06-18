@@ -31,7 +31,7 @@ export default function ResetPasswordPage() {
           description: "This password reset link is invalid or expired",
           variant: "destructive",
         })
-        router.push("https://ephemeral-liart.vercel.app//login")
+        router.push("/login")
       }
     }
 
@@ -73,7 +73,7 @@ export default function ResetPasswordPage() {
         description: "Your password has been successfully updated",
       })
 
-      router.push("https://ephemeral-liart.vercel.app/dashboard")
+      router.push("/dashboard")
     } catch (error: any) {
       toast({
         title: "Error",

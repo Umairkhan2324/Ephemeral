@@ -24,7 +24,7 @@ export default function Dashboard({ user, servers }: DashboardProps) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
-    window.location.href = "https://ephemeral-liart.vercel.app/"
+    window.location.href = "/"
   }
 
   return (

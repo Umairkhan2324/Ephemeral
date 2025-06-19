@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Sparkles } from "lucide-react"
 
 export default function SignupForm() {
@@ -19,12 +19,14 @@ export default function SignupForm() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const { supabase } = useSupabase()
-  const { toast } = useToast()
   const router = useRouter()
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+
+    // Log the environment variable to debug
+    console.log("Using site URL for redirect:", process.env.NEXT_PUBLIC_SITE_URL);
 
     try {
       // Create auth user
@@ -56,10 +58,8 @@ export default function SignupForm() {
       }
     } catch (error: any) {
       console.error("Signup error:", error)
-      toast({
-        title: "Signup failed",
+      toast.error("Signup failed", {
         description: error.message || "Something went wrong",
-        variant: "destructive",
       })
     } finally {
       setLoading(false)

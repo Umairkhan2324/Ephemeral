@@ -17,7 +17,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 
 type Server = Database["public"]["Tables"]["servers"]["Row"]
@@ -36,16 +36,13 @@ export default function CreatePostDialog({ isOpen, onClose, servers, selectedSer
   const [expiresIn, setExpiresIn] = useState("24")
   const [loading, setLoading] = useState(false)
   const { supabase } = useSupabase()
-  const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!content.trim() || !serverId) {
-      toast({
-        title: "Missing info",
+      toast.error("Missing info", {
         description: "Please add content and select a server",
-        variant: "destructive",
       })
       return
     }
@@ -65,8 +62,7 @@ export default function CreatePostDialog({ isOpen, onClose, servers, selectedSer
 
       if (error) throw error
 
-      toast({
-        title: "Post created!",
+      toast.success("Post created!", {
         description: "Your post is now live",
       })
 
@@ -74,10 +70,8 @@ export default function CreatePostDialog({ isOpen, onClose, servers, selectedSer
       onClose()
       window.location.reload()
     } catch (error: any) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: error.message,
-        variant: "destructive",
       })
     } finally {
       setLoading(false)

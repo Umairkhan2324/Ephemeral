@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Sparkles, ArrowLeft } from "lucide-react"
 
 export default function ForgotPasswordPage() {
@@ -17,7 +17,6 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const { supabase } = useSupabase()
-  const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,15 +30,12 @@ export default function ForgotPasswordPage() {
       if (error) throw error
 
       setSent(true)
-      toast({
-        title: "Reset email sent",
+      toast.success("Reset email sent", {
         description: "Check your email for password reset instructions",
       })
     } catch (error: any) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: error.message || "Something went wrong",
-        variant: "destructive",
       })
     } finally {
       setLoading(false)

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Sparkles } from "lucide-react"
 
 export default function ResetPasswordPage() {
@@ -19,42 +19,35 @@ export default function ResetPasswordPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { supabase } = useSupabase()
-  const { toast } = useToast()
 
   useEffect(() => {
     // Handle the auth callback
     const handleAuthCallback = async () => {
       const { data, error } = await supabase.auth.getSession()
       if (error) {
-        toast({
-          title: "Invalid reset link",
+        toast.error("Invalid reset link", {
           description: "This password reset link is invalid or expired",
-          variant: "destructive",
         })
         router.push("/login")
       }
     }
 
     handleAuthCallback()
-  }, [supabase, router, toast])
+  }, [supabase, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (password !== confirmPassword) {
-      toast({
-        title: "Passwords don't match",
+      toast.error("Passwords don't match", {
         description: "Please make sure both passwords are the same",
-        variant: "destructive",
       })
       return
     }
 
     if (password.length < 6) {
-      toast({
-        title: "Password too short",
+      toast.error("Password too short", {
         description: "Password must be at least 6 characters",
-        variant: "destructive",
       })
       return
     }
@@ -68,17 +61,14 @@ export default function ResetPasswordPage() {
 
       if (error) throw error
 
-      toast({
-        title: "Password updated",
+      toast.success("Password updated", {
         description: "Your password has been successfully updated",
       })
 
       router.push("/dashboard")
     } catch (error: any) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: error.message || "Something went wrong",
-        variant: "destructive",
       })
     } finally {
       setLoading(false)

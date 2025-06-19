@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Sparkles } from "lucide-react"
 
 export default function LoginForm() {
@@ -18,7 +18,6 @@ export default function LoginForm() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const { supabase } = useSupabase()
-  const { toast } = useToast()
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -34,8 +33,7 @@ export default function LoginForm() {
       if (error) throw error
 
       if (data.user) {
-        toast({
-          title: "Login successful",
+        toast.success("Login successful", {
           description: "Welcome back to Ephemeral!",
         })
 
@@ -44,10 +42,8 @@ export default function LoginForm() {
       }
     } catch (error: any) {
       console.error("Login error:", error)
-      toast({
-        title: "Login failed",
+      toast.error("Login failed", {
         description: error.message || "Invalid email or password",
-        variant: "destructive",
       })
     } finally {
       setLoading(false)

@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { MailCheck } from "lucide-react"
 
 export default function CheckEmailPage() {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
       <Card className="w-full max-w-md">
@@ -19,12 +21,15 @@ export default function CheckEmailPage() {
             You can close this window.
           </p>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex-col gap-4">
           <Link href="/login" className="w-full">
             <Button variant="outline" className="w-full">
               Back to Login
             </Button>
           </Link>
+          <p className="text-xs text-muted-foreground text-center">
+            (Debug: Emails are being sent with this base URL: {siteUrl || "URL not set"})
+          </p>
         </CardFooter>
       </Card>
     </div>

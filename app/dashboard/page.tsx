@@ -14,7 +14,12 @@ export default async function DashboardPage() {
     console.log("Dashboard session check:", session?.user?.email, sessionError)
 
     if (!session || sessionError) {
-      console.log("No session, redirecting to login")
+      console.log("No session or session error, redirecting to login:", sessionError)
+      redirect("/login")
+    }
+
+    if (!session.user) {
+      console.log("No user in session, redirecting to login")
       redirect("/login")
     }
 

@@ -28,7 +28,12 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <SupabaseProvider>
             {children}
-            <Toaster />
+            <Toaster 
+              position="top-right"
+              expand={true}
+              richColors={true}
+              closeButton={true}
+            />
           </SupabaseProvider>
         </ThemeProvider>
       </body>

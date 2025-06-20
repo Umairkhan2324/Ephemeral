@@ -11,55 +11,158 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
-import { Sparkles } from "lucide-react"
+import { Sparkles, Eye, EyeOff } from "lucide-react"
 
 export default function SignupForm() {
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const { supabase } = useSupabase()
   const router = useRouter()
 
+  const validateForm = () => {
+    if (!username.trim()) {
+      toast.error("Username required", {
+        description: "Please enter a username",
+      })
+      return false
+    }
+
+    if (username.trim().length < 3) {
+      toast.error("Username too short", {
+        description: "Username must be at least 3 characters long",
+      })
+      return false
+    }
+
+    if (!email.trim()) {
+      toast.error("Email required", {
+        description: "Please enter your email address",
+      })
+      return false
+    }
+
+    if (!password) {
+      toast.error("Password required", {
+        description: "Please enter a password",
+      })
+      return false
+    }
+
+    if (password.length < 6) {
+      toast.error("Password too short", {
+        description: "Password must be at least 6 characters long",
+      })
+      return false
+    }
+
+    return true
+  }
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+
     setLoading(true)
 
-    // Log the environment variable to debug
-    console.log("Using site URL for redirect:", process.env.NEXT_PUBLIC_SITE_URL);
+    // Show loading toast
+    const loadingToast = toast.loading("Creating your account...", {
+      description: "Please wait while we set up your profile",
+    })
+
+    console.log("Starting signup process for:", email.trim())
 
     try {
       // Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: {
           emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/login`,
+          data: {
+            username: username.trim(),
+          }
         },
       })
 
-      if (authError) throw authError
+      if (authError) {
+        console.error("Auth signup error:", authError)
+        toast.dismiss(loadingToast)
+
+        let errorMessage = "Signup failed"
+        let errorDescription = "Please try again"
+
+        if (authError.message.includes("already registered")) {
+          errorMessage = "Email already exists"
+          errorDescription = "This email is already registered. Please use a different email or try logging in."
+        } else if (authError.message.includes("Invalid email")) {
+          errorMessage = "Invalid email"
+          errorDescription = "Please enter a valid email address"
+        } else if (authError.message.includes("Password")) {
+          errorMessage = "Password requirements not met"
+          errorDescription = "Password must be at least 6 characters long"
+        } else if (authError.message.includes("Network")) {
+          errorMessage = "Connection error"
+          errorDescription = "Please check your internet connection and try again"
+        }
+
+        toast.error(errorMessage, {
+          description: errorDescription,
+        })
+        return
+      }
 
       if (authData.user) {
-        // Create user profile
+        console.log("Auth user created successfully:", authData.user.id)
+
+        // Create user profile in database
+        console.log("Creating user profile...")
         const { error: profileError } = await supabase.from("users").insert({
           id: authData.user.id,
-          username,
-          email,
-          avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
+          username: username.trim(),
+          email: email.trim(),
+          avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username.trim()}`,
         })
+
+        toast.dismiss(loadingToast)
 
         if (profileError) {
           console.error("Profile creation error:", profileError)
+          
+          // Even if profile creation fails, the user was created
+          // We'll show a warning but still redirect
+          toast.warning("Account created with issues", {
+            description: "Your account was created but there was an issue setting up your profile. Please contact support if you have problems.",
+          })
+        } else {
+          console.log("Profile created successfully")
         }
 
-        // Redirect to the check email page instead of showing a toast
-        router.push("/check-email")
+        // Check if email confirmation is required
+        if (authData.session) {
+          // User is automatically signed in (email confirmation disabled)
+          toast.success("Account created!", {
+            description: "Welcome to Ephemeral! Redirecting to dashboard...",
+          })
+          // SupabaseProvider will handle navigation
+        } else {
+          // Email confirmation required
+          toast.success("Check your email", {
+            description: "We've sent you a verification link. Please check your email to activate your account.",
+          })
+          router.push("/check-email")
+        }
       }
     } catch (error: any) {
-      console.error("Signup error:", error)
+      console.error("Unexpected signup error:", error)
+      toast.dismiss(loadingToast)
       toast.error("Signup failed", {
-        description: error.message || "Something went wrong",
+        description: "An unexpected error occurred. Please try again.",
       })
     } finally {
       setLoading(false)
@@ -85,7 +188,11 @@ export default function SignupForm() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              disabled={loading}
+              autoComplete="username"
+              minLength={3}
             />
+            <p className="text-xs text-muted-foreground">At least 3 characters</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -96,18 +203,33 @@ export default function SignupForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
+              autoComplete="email"
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+                autoComplete="new-password"
+                minLength={6}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                disabled={loading}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
             <p className="text-xs text-muted-foreground">Must be at least 6 characters</p>
           </div>
         </CardContent>

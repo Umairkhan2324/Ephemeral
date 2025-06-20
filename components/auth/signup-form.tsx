@@ -19,10 +19,19 @@ export default function SignupForm() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [lastAttempt, setLastAttempt] = useState<number | null>(null)
   const { supabase } = useSupabase()
   const router = useRouter()
 
   const validateForm = () => {
+    // Check if user is trying too quickly
+    if (lastAttempt && Date.now() - lastAttempt < 5000) {
+      toast.error("Please wait", {
+        description: "Wait a few seconds between signup attempts",
+      })
+      return false
+    }
+
     if (!username.trim()) {
       toast.error("Username required", {
         description: "Please enter a username",
@@ -68,6 +77,8 @@ export default function SignupForm() {
       return
     }
 
+    // Record attempt time
+    setLastAttempt(Date.now())
     setLoading(true)
 
     // Show loading toast
@@ -106,6 +117,9 @@ export default function SignupForm() {
         } else if (authError.message.includes("Password")) {
           errorMessage = "Password requirements not met"
           errorDescription = "Password must be at least 6 characters long"
+        } else if (authError.message.includes("Too many requests") || authError.message.includes("rate limit") || authError.status === 429) {
+          errorMessage = "Too many signup attempts"
+          errorDescription = "Please wait a few minutes before trying again. If this persists, try again in an hour."
         } else if (authError.message.includes("Network")) {
           errorMessage = "Connection error"
           errorDescription = "Please check your internet connection and try again"

@@ -94,7 +94,6 @@ export default function SignupForm() {
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/login`,
           data: {
             username: username.trim(),
           }
@@ -149,28 +148,20 @@ export default function SignupForm() {
           console.error("Profile creation error:", profileError)
           
           // Even if profile creation fails, the user was created
-          // We'll show a warning but still redirect
           toast.warning("Account created with issues", {
-            description: "Your account was created but there was an issue setting up your profile. Please contact support if you have problems.",
+            description: "Your account was created but there was an issue setting up your profile. Please try logging in.",
           })
         } else {
           console.log("Profile created successfully")
+          toast.success("Account created successfully!", {
+            description: "Your account has been created. Please sign in to continue.",
+          })
         }
 
-        // Check if email confirmation is required
-        if (authData.session) {
-          // User is automatically signed in (email confirmation disabled)
-          toast.success("Account created!", {
-            description: "Welcome to Ephemeral! Redirecting to dashboard...",
-          })
-          // SupabaseProvider will handle navigation
-        } else {
-          // Email confirmation required
-          toast.success("Check your email", {
-            description: "We've sent you a verification link. Please check your email to activate your account.",
-          })
-          router.push("/check-email")
-        }
+        // Always redirect to login page after signup
+        setTimeout(() => {
+          router.push("/login")
+        }, 1500)
       }
     } catch (error: any) {
       console.error("Unexpected signup error:", error)

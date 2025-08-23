@@ -38,9 +38,9 @@ export default function ServerPage({ server, posts, user }: ServerPageProps) {
           </Link>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-              {server.name.split(" ")[0]}
+              {server.name[0]}
             </div>
-            <h1 className="text-xl font-bold">{server.name}</h1>
+            <h1 className="text-xl font-bold break-words leading-snug">{server.name}</h1>
           </div>
           <div className="ml-auto">
             <Button onClick={() => setIsCreatePostOpen(true)}>

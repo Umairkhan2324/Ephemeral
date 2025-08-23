@@ -55,6 +55,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Prevent horizontal scroll/bleed on mobile */
+    overflow-x: hidden;
   }
 }
 
@@ -127,6 +129,24 @@
   transform: translateY(-3px);
   box-shadow: 0 1px 0 hsl(var(--border)/0.6) inset, 0 20px 40px hsl(var(--foreground)/0.10);
 }
+
+/* Neon glow utility for flashy, sleek cards */
+.neon {
+  position: relative;
+}
+.neon::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(600px 180px at 10% 10%, hsl(var(--primary)/0.25), transparent 60%),
+              radial-gradient(600px 180px at 90% 20%, hsl(var(--accent)/0.18), transparent 60%);
+  filter: blur(22px);
+  opacity: .35;
+  transition: opacity 200ms ease;
+}
+.neon:hover::after { opacity: .55; }
 
 @keyframes floatUp {
   from { opacity: 0; transform: translateY(8px); }

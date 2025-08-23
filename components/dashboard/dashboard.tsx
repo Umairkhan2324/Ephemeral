@@ -9,6 +9,7 @@ import { LogOut, Plus, Sparkles } from "lucide-react"
 import ServerCard from "./server-card"
 import CreatePostDialog from "./create-post-dialog"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel"
+import { useIsMobile } from "@/components/ui/use-mobile"
 
 type User = Database["public"]["Tables"]["users"]["Row"]
 type Server = Database["public"]["Tables"]["servers"]["Row"]
@@ -24,6 +25,7 @@ export default function Dashboard({ user, servers }: DashboardProps) {
   const { supabase } = useSupabase()
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>()
   const [current, setCurrent] = useState(0)
+  const isMobile = useIsMobile()
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -38,7 +40,7 @@ export default function Dashboard({ user, servers }: DashboardProps) {
     return () => carouselApi.off("select", onSelect)
   }, [carouselApi])
 
-  // Auto-rotate every 2s
+  // Auto-rotate every 2s (all breakpoints)
   useEffect(() => {
     if (!carouselApi) return
     const id = setInterval(() => {
@@ -85,12 +87,12 @@ export default function Dashboard({ user, servers }: DashboardProps) {
         </div>
 
         {/* Servers Grid */}
-        <div className="relative">
+        <div className="relative overflow-hidden">
           <Carousel opts={{ align: "center", loop: servers.length > 1 }} setApi={setCarouselApi}>
             <CarouselContent className="px-2 sm:px-6">
               {servers.map((server, index) => (
-                <CarouselItem key={server.id} className="basis-full sm:basis-[85%] md:basis-[70%] lg:basis-[55%] xl:basis-[45%]">
-                  <div className={`transition duration-300 ${index === current ? "opacity-100 scale-100" : "opacity-70 scale-95"}`}>
+                <CarouselItem key={server.id} className="basis-[90%] sm:basis-[85%] md:basis-[70%] lg:basis-[55%] xl:basis-[45%]">
+                  <div className={`transition duration-300 ${index === current ? "opacity-100 scale-100" : "opacity-75 scale-95"}`}>
                     <ServerCard
                       server={server}
                       onCreatePost={() => {

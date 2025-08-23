@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import type { Database } from "@/types/supabase"
 import { useSupabase } from "@/components/supabase-provider"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -19,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
+const autoClassifyPosts = process.env.NEXT_PUBLIC_AUTO_CLASSIFY_POSTS === "true"
 
 type Server = Database["public"]["Tables"]["servers"]["Row"]
 
@@ -36,31 +38,47 @@ export default function CreatePostDialog({ isOpen, onClose, servers, selectedSer
   const [expiresIn, setExpiresIn] = useState("24")
   const [loading, setLoading] = useState(false)
   const { supabase } = useSupabase()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!content.trim() || !serverId) {
-      toast.error("Missing info", {
-        description: "Please add content and select a server",
-      })
+    if (!content.trim()) {
+      toast.error("Missing info", { description: "Please add content" })
       return
     }
 
     setLoading(true)
 
     try {
-      const expiresAt = new Date()
-      expiresAt.setHours(expiresAt.getHours() + Number.parseInt(expiresIn))
-
-      const { error } = await supabase.from("posts").insert({
-        user_id: userId,
-        server_id: serverId,
-        content_text: content,
-        expires_at: expiresAt.toISOString(),
-      })
-
-      if (error) throw error
+      if (autoClassifyPosts) {
+        const res = await fetch("/api/posts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content_text: content, expires_in_hours: Number.parseInt(expiresIn) }),
+          // Helps in dev/unload scenarios
+          keepalive: true as any,
+        })
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}))
+          throw new Error(data?.error || "Failed to create post")
+        }
+        const data = await res.json().catch(() => ({} as any))
+        if (data?.serverId) {
+          toast.success("Post created!", { description: "Taking you to the server" })
+          router.push(`/servers/${data.serverId}`)
+        }
+      } else {
+        const expiresAt = new Date()
+        expiresAt.setHours(expiresAt.getHours() + Number.parseInt(expiresIn))
+        const { error } = await supabase.from("posts").insert({
+          user_id: userId,
+          server_id: serverId,
+          content_text: content,
+          expires_at: expiresAt.toISOString(),
+        })
+        if (error) throw error
+      }
 
       toast.success("Post created!", {
         description: "Your post is now live",
@@ -68,11 +86,13 @@ export default function CreatePostDialog({ isOpen, onClose, servers, selectedSer
 
       setContent("")
       onClose()
-      window.location.reload()
+      router.refresh()
     } catch (error: any) {
-      toast.error("Error", {
-        description: error.message,
-      })
+      // Ignore abort errors triggered by dev reloads/navigation
+      if (error?.name === "AbortError" || String(error).includes("The user aborted a request")) {
+        return
+      }
+      toast.error("Error", { description: error?.message || "Something went wrong" })
     } finally {
       setLoading(false)
     }
@@ -87,19 +107,23 @@ export default function CreatePostDialog({ isOpen, onClose, servers, selectedSer
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label>Server</Label>
-            <Select value={serverId} onValueChange={setServerId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose a server" />
-              </SelectTrigger>
-              <SelectContent>
-                {servers.map((server) => (
-                  <SelectItem key={server.id} value={server.id}>
-                    {server.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {!autoClassifyPosts && (
+              <>
+                <Label>Server</Label>
+                <Select value={serverId} onValueChange={setServerId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a server" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {servers.map((server) => (
+                      <SelectItem key={server.id} value={server.id}>
+                        {server.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </>
+            )}
           </div>
           <div>
             <Label>Content</Label>

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import { createServerSupabaseClient } from "@/lib/supabase"
 import LandingPage from "@/components/landing-page"
 import { redirect } from "next/navigation"
@@ -5,14 +6,12 @@ import { redirect } from "next/navigation"
 export default async function Home() {
   try {
     const supabase = createServerSupabaseClient()
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
+    const { data: userData } = await supabase.auth.getUser()
 
-    console.log("Home page session check:", session?.user?.email)
+    console.log("Home page user check:", userData?.user?.email)
 
     // If user is logged in, redirect to dashboard
-    if (session?.user) {
+    if (userData?.user) {
       redirect("/dashboard")
     }
   } catch (error) {

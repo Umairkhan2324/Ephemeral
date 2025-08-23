@@ -11,10 +11,8 @@ interface ServerPageProps {
 export default async function ServerDetailPage({ params }: ServerPageProps) {
   const supabase = createServerSupabaseClient()
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  if (!session) redirect("/login")
+  const { data: userData, error: userError } = await supabase.auth.getUser()
+  if (userError || !userData?.user) redirect("/login")
 
   const { data: server } = await supabase.from("servers").select("*").eq("id", params.id).single()
 
@@ -34,7 +32,7 @@ export default async function ServerDetailPage({ params }: ServerPageProps) {
     .gt("expires_at", new Date().toISOString())
     .order("created_at", { ascending: false })
 
-  const { data: user } = await supabase.from("users").select("*").eq("id", session.user.id).single()
+  const { data: user } = await supabase.from("users").select("*").eq("id", userData.user.id).single()
 
   return <ServerPage server={server} posts={posts || []} user={user!} />
 }

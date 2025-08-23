@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { createServerClient } from "@supabase/ssr"
+import { ensureRequestId } from "./lib/http"
+import { withRequest } from "./lib/logger"
 
 export async function middleware(request: NextRequest) {
+  // Ensure a request ID exists for correlation.
+  const reqId = ensureRequestId(request.headers)
+  const headers = new Headers(request.headers)
+  headers.set("x-request-id", reqId)
+
   let response = NextResponse.next({
     request: {
-      headers: request.headers,
+      headers,
     },
   })
 
@@ -21,7 +28,7 @@ export async function middleware(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           response = NextResponse.next({
             request: {
-              headers: request.headers,
+              headers,
             },
           })
           cookiesToSet.forEach(({ name, value, options }) =>
@@ -33,7 +40,10 @@ export async function middleware(request: NextRequest) {
   )
 
   // This will refresh session if expired - required for Server Components
-  await supabase.auth.getSession()
+  const log = withRequest({ requestId: reqId })
+  await supabase.auth.getSession().catch((err) => {
+    log.warn("Session refresh failed", { err: String(err) })
+  })
 
   return response
 }

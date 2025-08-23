@@ -4,12 +4,10 @@ import SignupForm from "@/components/auth/signup-form"
 
 export default async function SignupPage() {
   const supabase = createServerSupabaseClient()
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  const { data: userData } = await supabase.auth.getUser()
 
   // If user is logged in, redirect to dashboard
-  if (session) {
+  if (userData?.user) {
     redirect("/dashboard")
   }
 

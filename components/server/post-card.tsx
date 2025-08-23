@@ -21,7 +21,8 @@ export default function PostCard({ post }: PostCardProps) {
   const createdTime = formatDistanceToNow(new Date(post.created_at), { addSuffix: true })
 
   return (
-    <Card>
+    <div className="panel panel-hover animate-floatUp">
+      <Card className="bg-transparent border-none shadow-none">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -41,8 +42,9 @@ export default function PostCard({ post }: PostCardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <p className="whitespace-pre-line">{post.content_text}</p>
+        <p className="whitespace-pre-line leading-7">{post.content_text}</p>
       </CardContent>
-    </Card>
+      </Card>
+    </div>
   )
 }

@@ -100,3 +100,40 @@
     background-position: 135% 0%;
   }
 }
+
+/* --- Bento UI utilities (lightweight, CSS-only) --- */
+.bg-radial-soft {
+  background-image:
+    radial-gradient(1200px 600px at 10% -10%, hsl(var(--primary)/0.08), transparent 60%),
+    radial-gradient(1200px 600px at 110% 10%, hsl(var(--accent)/0.06), transparent 60%);
+}
+
+.bg-grid-soft {
+  background-image:
+    linear-gradient(hsl(var(--border)/0.18) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border)/0.18) 1px, transparent 1px);
+  background-size: 32px 32px, 32px 32px;
+  background-position: -1px -1px, -1px -1px;
+}
+
+.panel {
+  @apply rounded-2xl border border-border/50 bg-card/80 backdrop-blur supports-[backdrop-filter]:bg-card/60;
+  box-shadow: 0 1px 0 hsl(var(--border)/0.6) inset, 0 10px 30px hsl(var(--foreground)/0.06);
+}
+.panel-hover {
+  transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease;
+}
+.panel-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 1px 0 hsl(var(--border)/0.6) inset, 0 20px 40px hsl(var(--foreground)/0.10);
+}
+
+@keyframes floatUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-floatUp { animation: floatUp .35s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-hover, .animate-floatUp { transition: none; animation: none; }
+}

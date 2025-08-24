@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Ephemeral - Gen Z Social Platform",
-  description: "Share moments that disappear. Connect with your tribe.",
+  description: "Share moments that disappear. Connect with your vibe.",
     generator: 'UMAIR KHAN',
     icons: {
       icon: '/favicon.ico',

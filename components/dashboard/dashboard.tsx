@@ -10,6 +10,7 @@ import ServerCard from "./server-card"
 import CreatePostDialog from "./create-post-dialog"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel"
 import { useIsMobile } from "@/components/ui/use-mobile"
+import AvatarChooser from "@/components/profile/avatar-chooser"
 
 type User = Database["public"]["Tables"]["users"]["Row"]
 type Server = Database["public"]["Tables"]["servers"]["Row"]
@@ -64,6 +65,7 @@ export default function Dashboard({ user, servers }: DashboardProps) {
               <AvatarFallback>{user.username[0]?.toUpperCase()}</AvatarFallback>
             </Avatar>
             <span className="font-medium">{user.username}</span>
+            <AvatarChooser userId={user.id} username={user.username} currentUrl={user.avatar_url || undefined} />
             <Button variant="ghost" size="icon" onClick={handleLogout}>
               <LogOut className="h-5 w-5" />
             </Button>
